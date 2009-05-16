@@ -1,0 +1,28 @@
+
+.box
+  :border
+    :top 1px solid black
+    :bottom 5px solid black
+    
+
+!bg_color = #002244
+body
+  :background-color = !bg_color
+  
+  
+!main_color = #00ff00
+
+#main
+  :color = !main_color
+  :p
+    :background-color = !main_color
+    :color #000000
+    
+    
+=standard-border
+  :border 1px solid black
+  :padding 5px
+    
+#main
+  +standard-border
+  

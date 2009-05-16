@@ -1,0 +1,200 @@
+Neben der Frage, welchen Editor (oder gar welche IDE) man verwendet, trägt auch die Diskussion über die zu verwendende Template-Engine unter Web-Entwicklern beizeiten religiöse Züge. Dabei ist es fast egal, welche Programmiersprache zum Einsatz kommt, wer die Wahl hat, hat die Qual. Aber es gibt ja auch einiges zu beachten: Designer möchten möglichst viel HTML und möglichst wenig Code in den Templates haben. WYSIWYG-Editoren scheitern an (exotischen) Template-Konstrukten. Den meisten Template-Sprachen ist allerdings eines gemein: Man mixt in irgendeiner Form Code bzw. Content in HTML. Beispiele hierfür sind PHP oder auch die PHP-Template-Sprache Smarty, Embedded RuBy (ERB), JSP-Seiten inklusive Taglibs, etc. Das HAML-Projekt von Hampton Caitlin, stellt diese Entscheidung in Frage und schafft dadurch erstaunliche Freiräume und Möglichkeiten.
+
+HAML steht für (X)HTML Abstraction Markup Language. HAML ist in Ruby implementiert und findet daher vor allem in Ruby-Web-Frameworks wie Rails, Merb oder auch Sinatra seine Anwendung.
+
+Das primäre Ziel von HAML ist die möglichst effiziente und übersichtliche Abbildung der Dokument-Struktur unter Minimierung der Tipparbeit für den Entwickler. In Referenz auf die japanische Kurz-Gedicht-Form lautet der Slogan von HAML auch "markup haiku". 
+
+Ein weiteres Ziel ist eine Annährung der Markup-Sprache an CSS, so werden CSS-Selektor-ähnliche Konstrukte zur Auszeichnung von Tags mit id- und class-Attributen verwendet.
+
+Zusätzlich zu der Template-Sprache HAML enthält das HAML-Softwarepaket auch die CSS-Abstraktion SASS. Hierbei handelt es sich ebenfalls um eine eigene Sprache die grob CSS ähnelt, aber durch Ergänzen der Syntax Dinge wie echte Kaskadierung, Konstanten und Makros ermöglicht. In den eben genannten Frameworks generiert SASS automatisch auf Anfrage CSS-Dateien aus den SASS-Dateien. Auf die Beschreibung von SASS wird allerdings in diesem Artikel verzichtet.
+
+Installation und Einrichtung
+
+Die Stabile Version von HAML lässt sich über den Rubygems-Paketmanager mit gem install haml installieren.
+
+Die Verwendung von HAML erfolgt nun entweder als Plugin (z.B. in Rails) oder über das Kommandozeilen-Tools haml, mit denen sich .haml-Dateien und .sass-Dateien in .html-Dateien und .css-Dateien umwandeln lassen, in dem man diese mit quell- und Zieldatei aufruft (also z.B. haml simple.haml simple.html).
+
+Um HAML/SASS in ein Rails-Projekt einzubinden kann das haml-Kommando das nötige Rails-Plugin erzeugen, in dem man es in RAILS_ROOT mit haml --rails . aufruft.
+
+Damit HAML als Template-Engine zum Einsatz kommt, müssen die View-Dateien auf .haml enden, daher muss man z.B. über Generatoren generierte Dateien von .erb nach .haml umbenennen.
+
+Syntax
+
+Die Grundlegende Syntax ist im Listing 1 und 2 dargestellt, in der der HAML-Code und der daraus generierte HTML-Code zu sehen ist.
+
+(Listing 1: simple.haml)
+%html
+  %head
+    %title Dies ist ein Titel
+  %body
+    #header
+      %h1 Überschrift
+    .content
+      %p
+        Absatz
+
+(Listing 2: simple.html)
+<html>
+  <head>
+    <title>Dies ist ein Titel</title>
+  </head>
+  <body>
+    <div id='header'>
+      <h1>Überschrift</h1>
+    </div>
+    <div class='content'>
+      <p>
+        Absatz
+      </p>
+    </div>
+  </body>
+</html>
+
+Wie zu sehen ist, drückt HAML die Struktur des Dokuments allein durch Einrückungen aus (HAML besteht sogar sehr strikt auf der Ruby-typischen Einrückung mit zwei Leerzeichen) und es fehlen die schließenden Elemente. Dies mutet zunächst befremdlich an und man wähnt sich kurz in einem Traum von Python-Erfinder Guido Rossum, allerdings hat dieses Vorgehen ein paar massive Vorteile: Zum einen ist es kaum möglich mit HAML invalides Markup zu erzeugen, da schließende Elemente automatisch hinzugefügt werden und die logische Struktur des Dokuments sehr strikt von HAML geprüft wird. Zum anderen enthalten HAML-Templates deutlich weniger "Rauschen" in Form der HTML/XML-Tag-Suppe. 
+
+Ruby-Einbettung
+
+Neben beschriebenen Grundelementen gibt es in HAML diverse Konstrukte um z.B. Ruby-Code einzubinden, komplexere Attribute zu setzen und ähnliches. Ruby-Code kann über mehrere Varianten eingebunden werden. Zunächst gibt es eine Variante, um Ausgaben über Ruby-Code zu generieren, z.B. um Daten in das Template zu setzen. Hierzu wird das Gleichheitszeichen verwendet. Das Gleichheitszeichen kann entweder auf der selben Zeile wie das Tag stehen, oder eigenständig in einer neuen Zeile stehen.
+
+(Listing x: ruby_out.haml)
+%h1= "Headline".downcase
+%p
+  = "Absatz".upcase
+
+(Listing x: ruby_out.html)
+<h1>headline</h1>
+<p>
+  ABSATZ
+</p>
+
+Je nach Konfiguration kann HAML diese Ausgaben bereits automatisch HTML-Escapen um die üblichen Crossite-Scripting-Attacken zu vermeiden. Mit &= und != gibt es darüberhinaus zwei explizite Varianten für Escaped und Unescaped-Ausgaben.
+
+Um Schleifen und Bedingungen über Ruby-Code auszudrücken gibt es eine Variante, die keinen Output erzeugt, hierfür wird ein Minus-Symbol verwendet:
+
+(Listing x: ruby_logic.haml)
+%ul
+  - %w{eins zwei drei}.each do |word|
+    %li= word
+
+(Listing x:ruby_logic.html)
+<ul>
+  <li>eins</li>
+  <li>zwei</li>
+  <li>drei</li>
+  <li>vier</li>
+</ul>
+
+Interessant: HAML schließt Ruby-Blöcke genau wie HTML-Tags automatisch nach Berücksichtigung der Einrückung.
+
+Ein weiteres HAML-Konstrukt sind die sog. Filter, mit dem man größere Blöcke an Text automatisch durch verschiedene Prozessoren schicken kann. So kann man z.B. längere Texte mit Textile formatieren, was im Zweifel einfacher zu lesen ist, als den Text komplett mit HAML auszuzeichnen (Siehe Listing ). Natürlich kann man auch eigene Filter definieren.
+
+(Listing x: textile.haml)
+.about
+  :textile
+    h2. Dies ist eine Überschrift
+    
+    Dies ist ein Absatz
+    
+    * Dies ist eine Liste
+    
+    # Dies ist eine andere Liste
+
+(Listing x: textile.html)
+<div class='about'>
+  <h2>Dies ist eine Überschrift</h2>
+  <p>Dies ist ein Absatz</p>
+  <ul>
+   <li>Dies ist eine Liste</li>
+  </ul>
+  <ol>
+   <li>Dies ist eine andere Liste</li>
+  </ol>
+</div>
+
+Die komplette Liste der aktuellen Filter ist in Tabelle 1 vorhanden
+
+plain - Gut für lange Blöcke, die nicht von HAML geparsed werden sollen
+javascript - Verpackt den Block in <script>-Tags und CDATA-Tags für inline-javascript
+escaped - Das selbe wie Plain, aber mit HTML-Escaping
+ruby - Evaluiert den Block als Ruby-Script und setzt alle Ausgaben (z.B. mit puts) in das resultierende HTML ein
+preserve - Gibt den Text mit Whitespace-Preservation aus, z.B. für Ausgabe in textfields oder <pre>-Tags
+erb - Der Block wird von ERB ausgewertet. Die Auswertung von Ruby-Code erfolgt im selben Kontext wie im HAML-Template selbst
+sass - Der Block wird durch den SASS-Compiler ausgewertet um inline-CSS zu erzeugen
+textile - Der Block wird durch Textile gefiltert (Benutzt die RedCloth-Bibliothek)
+markdown - Der Block wird durch Markdown gefiltert (Benutzt RDiscount, RPeg-Markdown, Maruku oder BlueCloth, wenn vorhanden)
+maruku - Der Block wird durch Maruku gefiltert, welches einige Erweiterungen zu Markdown enthält
+
+Attribute
+
+Neben dem Class- und dem ID-Attribut können manche HTML-Elemente deutlich mehr Attribute enthalten. Hierzu kann man an ein HAML-Tag ein Hash in Ruby-Syntax anhängen. Dieses Hash wird auch als Ruby-Ausdruck geparsed, so dass man dort auch Methodenaufrufe unterbringen kann. Schließt man einen Methodenaufruf, der ein komplettes Hash zurückliefert, in die Hash-Klammern ein, wird dieses Hash verwendet. Im Listing x wird die Methode html_attrs aus dem Modul Haml::Helpers verwendet.
+
+(Listing x: attributes.haml)
+%html{html_attrs(lang = 'de-DE')}
+  %head
+    %title Seitentitel
+  %body
+    Seitenbody
+
+(Listing x: attributes.html)
+<html lang='de-DE' xml:lang='de-DE' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <title>Seitentitel</title>
+  </head>
+  <body>
+    Seitenbody
+  </body>
+</html>
+
+Einrückung kontrollieren
+
+Standardmäßig versucht HAML, das erzeugte HTML so "schön" wie möglich, also vernünftig eingerückt zu generieren. Manchmal muss man allerdings Whitespace zwischen Tags unterdrücken, um Abstände zwischen Elementen nicht zu gefährden. Dies kann man in HAML erreichen, in dem man mit einem > alle Whitespaces um das Tag herum löschen kann und mit < alle Whitespaces innerhalb des Tags. Demonstriert in Listing x und x
+
+(Listing x: whitespace.haml)
+%p Vorher
+%p><
+  foo 
+  bar
+%p Nachher
+
+(Listing x: whitespace.html)
+<p>Vorher</p><p>foo
+bar</p><p>Nachher</p>
+
+Kommentare
+
+Kommentare gibt es in zwei Varianten. Ein einfacher / erzeugt einen HTML-Kommentar, der auch einen darunter eingerückten Block enthalten kann. Ein -# erzeugt einen "lautlosen" Kommentar, der nicht mit in das HTML gerendert wird, also nur der Code-Dokumentation dienen kann. Ein unterstützter Sonderfall sind die Bedingten Kommentare des Microsoft Internet Explorer, die z.B. gern für IE-Spezifische Hacks eingesetzt werden. Beispiele für beide Kommentare finden sich in Listing x und x
+
+(Listing: comments.haml)
+/ Esst mehr Obst!
+-#
+  Dies ist ein leiser
+  Kommentar, der auch
+  Mehrzeilig sein darf
+/[if IE]
+  %a{ :href => 'http://www.mozilla.com/en-US/firefox/' }
+    %h1 Get Firefox
+
+(Listing :comments.html)
+<!-- Esst mehr Obst! -->
+<!--[if IE]> 
+  <a href='http://www.mozilla.com/en-US/firefox/'>
+    <h1>Get Firefox</h1>
+  </a>
+<![endif]-->
+
+Fazit
+
+Gute Web-Entwickler solten wenig Schwierigkeiten haben, sich auf die etwas exotische Syntax einzustellen und die Vorteile schätzen zu lernen. Schwieriger wird dies, wenn z.B. Frontend-Entwickler oder Designer an einem Projekt beteiligt sind. Der wenige Ruby-Code welcher sich in (guten!) ERB-Templates befindet, ist (guten!) Designern in der Regel beizubringen. Der Umstieg auf HAML hingegen erfordert, wie der Name schon andeutet, ein gewisses Abstraktionsvermögen, welches nicht immer vorausgesetzt werden kann. Hier liegt die eigentliche Herausforderung bei der Benutzung von HAML und SASS. 
+
+Hat man ein Entwickler-Team zur Hand, welches insgesamt mit der Syntax keine Probleme hat, so kann durch den Einsatz der beiden Sprachen deutlich übersichtlicherer und besser wartbarer Code erzeugt werden. Durch die Zeilen-Orientierung beider Sprachen wird die Verwendung von Versionskontrollsystemen vereinfacht und durch die relativ strikten Syntax-Checks der Konverter wird es ungleich schwerer, invaliden Code zu erzeugen. 
+
+Links
+
+HAML - http://haml.hamptoncatlin.com/
+HAML-Referenz - http://haml.hamptoncatlin.com/docs/rdoc/classes/Haml.html
+
+Markdown - http://daringfireball.net/projects/markdown/
+Textile - http://www.textism.com/tools/textile/
+Maruku - http://maruku.rubyforge.org/
+Compass - http://compass-style.org/
+

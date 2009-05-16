@@ -1,0 +1,39 @@
+Die Syntax von SASS lehnt sich grob an normale CSS-Syntax an. Im Listing x ist eine einfache SASS-Datei gezeigt, im Listing x das daraus erzeugte CSS. Analog zu HAML wird die Zugehörigkeit von Styles zu Selektoren über Einrückung geregelt, die geschweiften Klammern sind dadurch nicht notwendig.
+Styles zu kaskadieren ist in SASS wesentlich einfacher als in CSS - Man rückt die Selektoren einfach entsprechend untereinander ein. Hierdurch werden zueinander gehörige Selektoren viel klarer erkennbar. Attribute und Parameter können auf zwei Arten voneinander getrennt werden: Die klassische CSS-Syntax mit dem Doppelpunkt zwischen beiden ist genau so möglich wie eine an die Ruby-Symbole angelegte Schreibweise mit dem Doppelpunkt cor dem Attribut-Namen. In der Regel wird die erste Variante gerade erfahrenen CSS-Entwicklern leichter von der Hand gehen, auf der anderen Seite kann man bei der zweiten Syntax Attribute und Selektoren besser von einander unterscheiden. Auf das abschließende Semikolon wird bei SASS komplett verzichtet.
+
+Als weitere Hilfe kann man auf die übergeordneten Selektoren referenzieren, in dem man dem Unterselektor ein & vorsetzt, wodurch gerade die pseudo-selektoren wie :hover oder :visited sehr einfach stylebar werden.
+
+Recht verwirrend, aber praktisch ist die Möglichkeit, das & sogar hinter dem neuen Selektor einzusetzen. Verwirrend und schwer zu erklären, daher in Listing x und x gezeigt.
+
+Attribut-Namespaces
+
+Viele Attribute in CSS sind in einer Art quasi-Namespace abgelegt, z.B. font-family, font-size, font-weight etc. In SASS kann man auch dies über einrückungen sehr übersichtlich schreiben (Siehe Listing x und x)
+
+Konstanten
+
+Eines der Features, die man in CSS am meisten vermisst, sobald man mit SASS gearbeitet hat, sind Konstanten, die man z.B. für Farbwerte oder auch Zahlen oder Strings nutzen kann. Mit Zahlen oder Farbwerten kann man dann sogar Rechnen, wie in Listing x und x gezeigt
+
+Import
+
+Ähnlich wie in CSS lassen sich mit der @import-Anweisung andere Stylesheets einbauen. Hierbei gibt es zwei Varianten: In der ersten Variante wird ein SASS-Stylesheet referenziert - In diesem Fall wird das andere Stylesheet einfach inkludiert. Wird ein CSS-Stylesheet referenziert, wird statt dessen eine @import-Anweisung in das kompilierte Stylesheet gerendert.
+
+Kommetare
+
+In SASS gibt es zwei Arten von Kommentaren, sog. laute und leise Kommentare. Leise Kommentare werden mit einem // eingeleitet und werden NICHT in das resultierende Stylesheet gerendert. Laute Kommetare werden dagegen mit einem /* eingeleitet und landen als CSS-Kommetare in dem resultierenden Stylesheet.
+
+(Siehe Listing x und x)
+
+Mixins
+
+Das mächtigste Feature in SASS sind die sogenannten Mixins, mit denen man Selektoren mit einer Anweisung um eine ganze Reihe von CSS-Anweisungen ergänzen kann. Mixins können miteinander kombiniert werden und können andere Mixins inkludieren, so dass man sehr komplexe Stylesheets mit wenig Code erzeugen kann. Mixins werden über ein einleitendes Gleichheitszeichen definiert und können dann mit einem Pluszeichen in andere Selektoren "gemixt" werden. (Listing x und x)
+
+
+
+
+
+
+
+
+
+
+
